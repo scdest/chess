@@ -18,7 +18,24 @@ import java.util.Optional;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Game {
     private final ChessField[][] board = new ChessField[Constants.BOARD_LENGHT][Constants.BOARD_LENGHT];
+    private Party partyMove = Party.WHITE;
     private static final Map<BoardCoordinate, Chess> initialBoardCoordinatesToChessMap = new HashMap<>();
+
+    public ChessField[][] getBoard() {
+        return board;
+    }
+
+    public Party getPartyMove() {
+        return partyMove;
+    }
+
+    public void switchMove() {
+        if(partyMove == Party.WHITE) {
+            partyMove = Party.BLACK;
+        } else {
+            partyMove = Party.WHITE;
+        }
+    }
 
     static {
         initPawns();
@@ -38,19 +55,9 @@ public class Game {
             for(int j = 0;j < Constants.BOARD_LENGHT; j++) {
                 BoardCoordinate boardCoordinate = IndexToBoardCoordinateMapper.getBoardCoordinateByIndex(j, i);
                 Chess chess = initialBoardCoordinatesToChessMap.get(boardCoordinate);
+                chess.setCurrentCoordinate(boardCoordinate);
                 board[i][j] = new ChessField(chess, boardCoordinate);
             }
-        }
-    }
-
-    public void printCurrentPositions() {
-        for(int i = 0;i < Constants.BOARD_LENGHT; i++) {
-            for(int j = 0;j < Constants.BOARD_LENGHT; j++) {
-                String toPrint = Optional.ofNullable(board[j][i].getPresentChess()).map(f -> f.getChessType().getLabel()).orElse("X");
-                System.out.print(toPrint);
-                System.out.print(" ");
-            }
-            System.out.println();
         }
     }
 
@@ -92,5 +99,16 @@ public class Game {
     private static void initQueens() {
         initialBoardCoordinatesToChessMap.put(new BoardCoordinate(1, 'd'), new Chess(Party.WHITE, ChessType.QUEEN));
         initialBoardCoordinatesToChessMap.put(new BoardCoordinate(8, 'd'), new Chess(Party.BLACK, ChessType.QUEEN));
+    }
+
+    public void printCurrentPositions() {
+        for(int i = 0;i < Constants.BOARD_LENGHT; i++) {
+            for(int j = 0;j < Constants.BOARD_LENGHT; j++) {
+                String toPrint = Optional.ofNullable(board[j][i].getPresentChess()).map(f -> f.getChessType().getLabel()).orElse("X");
+                System.out.print(toPrint);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
     }
 }
